@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogpost-query-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blogpost-query
+  template:
+    metadata:
+      labels:
+        app: blogpost-query
+    spec:
+      containers:
+        - name: blogpost-query
+          image: arun6783/blogpost-query
+          env:
+            - name: EVENTS_SRV_HOST
+              value: 'blogpost-eventbus-srv'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: blogpost-query-srv
+spec:
+  selector:
+    app: blogpost-query
+  ports:
+    - name: blogpost-query-tcp
+      port: 4002
+      targetPort: 4002
+  type: LoadBalancer

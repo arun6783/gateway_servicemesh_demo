@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogpost-posts-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blogpost-posts
+  template:
+    metadata:
+      labels:
+        app: blogpost-posts
+    spec:
+      containers:
+        - name: blogpost-posts
+          image: arun6783/blogpost-posts
+          env:
+            - name: EVENTS_SRV_HOST
+              value: 'blogpost-eventbus-srv'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: blogpost-posts-srvce
+spec:
+  selector:
+    app: blogpost-posts
+  ports:
+    - name: blogpost-posts-tcp
+      port: 4100
+      targetPort: 4100
+  type: LoadBalancer

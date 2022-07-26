@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogpost-comments-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blogpost-comments
+  template:
+    metadata:
+      labels:
+        app: blogpost-comments
+    spec:
+      containers:
+        - name: blogpost-comments
+          image: arun6783/blogpost-comments
+          env:
+            - name: EVENTS_SRV_HOST
+              value: 'blogpost-eventbus-srv'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: blogpost-comments-srv
+spec:
+  selector:
+    app: blogpost-comments
+  ports:
+    - name: blogpost-comments-tcp
+      port: 4001
+      targetPort: 4001
+  type: LoadBalancer

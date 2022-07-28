@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import axios from 'axios'
-
-const PostCreate = () => {
+const PostCreate = ({ notifyParent }) => {
   const [title, setTitle] = useState('')
 
   const onSubmit = async (event) => {
@@ -11,7 +10,7 @@ const PostCreate = () => {
     await axios.post(`http://${postsServiceHost}:4100/posts`, {
       title,
     })
-
+    notifyParent()
     setTitle('')
   }
 

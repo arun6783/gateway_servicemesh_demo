@@ -36,6 +36,10 @@ const handleEvent = (type, data) => {
   }
 }
 
+app.get('/posts/:id', (req, res) => {
+  res.send(posts[req.params.id])
+})
+
 app.get('/posts', (req, res) => {
   res.send(posts)
 })

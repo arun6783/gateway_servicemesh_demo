@@ -29,7 +29,7 @@ const PostList = ({ postCreated }) => {
           <CommentList comments={post.comments} />
           <CommentCreate
             notifyParent={() => {
-              setCommentCreated(true)
+              setCommentCreated(!commentCreated)
             }}
             postId={post.id}
           />

@@ -12,15 +12,10 @@ app.post('/events', (req, res) => {
 
   events.push(event)
 
-  let postsServiceHost = process.env.POSTS_SRV_HOST || 'localhost'
   let commentsServiceHost = process.env.COMMENTS_SRV_HOST || 'localhost'
   let queryServiceHost = process.env.QUERY_SRV_HOST || 'localhost'
   let moderationServiceHost = process.env.MODERATION_SRV_HOST || 'localhost'
 
-  // axios.post(`http://${postsServiceHost}:4100`, event).catch((err) => {
-  //   console.log(`http://${postsServiceHost}:4100` + err)
-  //   console.log('event', event)
-  // })
   axios
     .post(`http://${commentsServiceHost}:4001/events`, event)
     .catch((err) => {

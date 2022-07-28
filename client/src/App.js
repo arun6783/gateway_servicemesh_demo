@@ -9,7 +9,7 @@ const App = () => {
       <h1>Create Post</h1>
       <PostCreate
         notifyParent={() => {
-          setPostCreated(true)
+          setPostCreated(!postCreated)
         }}
       />
       <hr />

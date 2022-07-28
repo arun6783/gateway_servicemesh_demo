@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { randomBytes } = require('crypto')
 const cors = require('cors')
-const axios = require('axios')
+const { natsWrapper } = require('./events/nats-wrapper')
 
 const app = express()
 app.use(bodyParser.json())
@@ -22,21 +22,20 @@ app.post('/posts', async (req, res) => {
   }
 
   console.log('title', title)
-  posts[id] = {
+  let newPost = {
     id,
     title,
   }
+  posts[id] = newPost
 
-  let eventsServiceHost = process.env.EVENTS_SRV_HOST || 'localhost'
-
-  await axios.post(`http://${eventsServiceHost}:4005/events`, {
-    type: 'PostCreated',
-    data: {
-      id,
-      title,
-    },
-  })
-
+  try {
+    await natsWrapper.publish('PostCreated', newPost)
+  } catch (err) {
+    console.log(
+      'PostsService - error occured when trying to post data to nats',
+      err
+    )
+  }
   res.status(201).send(posts[id])
 })
 
@@ -46,6 +45,20 @@ app.post('/events', (req, res) => {
   res.send({})
 })
 
-app.listen(4100, () => {
-  console.log('Listening on 4100')
-})
+const start = async () => {
+  try {
+    let clusterId = process.env.NATS_CLUSTER_ID || 'servicemeshdemo'
+    let natsUrl = process.env.NATS_URL || 'http://localhost:4222'
+    let clientId =
+      process.env.NATS_CLIENT_ID || 'gateway-servicemesh-postsclient'
+
+    await natsWrapper.connect(clusterId, clientId, natsUrl)
+    app.listen(4100, () => {
+      console.log('Postsservice- Listening on 4100')
+    })
+  } catch (err) {
+    console.log('Post service - error occured when connecting to nats', err)
+  }
+}
+
+start()

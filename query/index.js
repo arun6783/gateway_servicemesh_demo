@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const axios = require('axios')
+const { natsWrapper } = require('./events/nats-wrapper')
 
 const app = express()
 app.use(bodyParser.json())
@@ -41,30 +42,38 @@ app.get('/posts/:id', (req, res) => {
 })
 
 app.get('/posts', (req, res) => {
+  console.log('posts', posts)
   res.send(posts)
 })
 
 app.post('/events', (req, res) => {
   const { type, data } = req.body
 
-  handleEvent(type, data)
+  //handleEvent(type, data)
 
   res.send({})
 })
 
-app.listen(4002, async () => {
-  console.log('Listening on 4002')
+const start = async () => {
   try {
-    let eventsServiceHost = process.env.EVENTS_SRV_HOST || 'localhost'
-
-    const res = await axios.get(`http://${eventsServiceHost}:4005/events`)
-
-    for (let event of res.data) {
-      console.log('Processing event:', event.type)
-
-      handleEvent(event.type, event.data)
-    }
-  } catch (error) {
-    console.log(error.message)
+    await natsWrapper.connect(
+      process.env.NATS_CLUSTER_ID || 'servicemeshdemo',
+      process.env.NATS_CLIENT_ID || 'gateway-servicemesh-queryclient',
+      process.env.NATS_URL || 'http://localhost:4222'
+    )
+  } catch (err) {
+    console.log('QueryService - error occured when connecting to nats', err)
   }
-})
+
+  app.listen(4002, async () => {
+    console.log('Listening on 4002')
+    try {
+      natsWrapper.listen('PostCreated', 'Query-Service', handleEvent)
+      natsWrapper.listen('CommentCreated', 'Query-Service', handleEvent)
+    } catch (error) {
+      console.log(error.message)
+    }
+  })
+}
+
+start()

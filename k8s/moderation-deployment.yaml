@@ -1,33 +1,33 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: blogpost-moderation-depl
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: blogpost-moderation
-  template:
-    metadata:
-      labels:
-        app: blogpost-moderation
-    spec:
-      containers:
-        - name: blogpost-moderation
-          image: arun6783/blogpost-moderation
-          env:
-            - name: EVENTS_SRV_HOST
-              value: 'blogpost-eventbus-srv'
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: blogpost-moderation-srv
-spec:
-  selector:
-    app: blogpost-moderation
-  ports:
-    - name: blogpost-moderation-tcp
-      port: 4003
-      targetPort: 4003
-  type: LoadBalancer
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: blogpost-moderation-depl
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: blogpost-moderation
+#   template:
+#     metadata:
+#       labels:
+#         app: blogpost-moderation
+#     spec:
+#       containers:
+#         - name: blogpost-moderation
+#           image: arun6783/blogpost-moderation
+#           env:
+#             - name: EVENTS_SRV_HOST
+#               value: 'blogpost-eventbus-srv'
+# ---
+# kind: Service
+# apiVersion: v1
+# metadata:
+#   name: blogpost-moderation-srv
+# spec:
+#   selector:
+#     app: blogpost-moderation
+#   ports:
+#     - name: blogpost-moderation-tcp
+#       port: 4003
+#       targetPort: 4003
+#   type: LoadBalancer

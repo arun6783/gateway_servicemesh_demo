@@ -31,12 +31,18 @@ const PostList = ({ postCreated }) => {
               Post by Arun
             </span>
           </div>
-          <CommentList comments={post.comments} />
-          <CommentCreate
+          <CommentList
+            postId={post.id}
             notifyParent={() => {
               setCommentCreated(!commentCreated)
             }}
+            comments={post.comments}
+          />
+          <CommentCreate
             postId={post.id}
+            notifyParent={() => {
+              setCommentCreated(!commentCreated)
+            }}
           />
         </div>
       </div>

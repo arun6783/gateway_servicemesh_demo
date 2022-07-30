@@ -1,7 +1,6 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const axios = require('axios')
 const { natsWrapper } = require('./events/nats-wrapper')
 
 const app = express()
@@ -11,6 +10,9 @@ app.use(cors())
 const posts = {}
 
 const handleEvent = (type, data) => {
+  console.log('inhandleenven', type)
+  console.log('inhandleendata', data)
+
   if (type === 'PostCreated') {
     const { id, title } = data
 
@@ -22,6 +24,13 @@ const handleEvent = (type, data) => {
 
     const post = posts[postId]
     post.comments.push({ id, content, status })
+  }
+
+  if (type === 'CommentDeleted') {
+    console.log('commentdeleteddata', data)
+    const { id, postId } = data
+    const commentsByPostId = posts[postId].comments
+    posts[postId].comments = commentsByPostId.filter((x) => x.id !== id)
   }
 
   if (type === 'CommentUpdated') {
@@ -46,14 +55,6 @@ app.get('/posts', (req, res) => {
   res.send(posts)
 })
 
-app.post('/events', (req, res) => {
-  const { type, data } = req.body
-
-  //handleEvent(type, data)
-
-  res.send({})
-})
-
 const start = async () => {
   try {
     await natsWrapper.connect(
@@ -70,6 +71,7 @@ const start = async () => {
     try {
       natsWrapper.listen('PostCreated', 'Query-Service', handleEvent)
       natsWrapper.listen('CommentCreated', 'Query-Service', handleEvent)
+      natsWrapper.listen('CommentDeleted', 'Query-Service', handleEvent)
     } catch (error) {
       console.log(error.message)
     }

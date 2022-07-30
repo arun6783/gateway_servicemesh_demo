@@ -2,7 +2,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { randomBytes } = require('crypto')
 const cors = require('cors')
-const axios = require('axios')
 const { natsWrapper } = require('./events/nats-wrapper')
 
 const app = express()
@@ -42,36 +41,41 @@ app.post('/posts/:id/comments', async (req, res) => {
   res.status(201).send(comments)
 })
 
-// app.post('/events', async (req, res) => {
-//   console.log('commentsservie-events')
-//   console.log('Event Received:', req.body.type)
+app.delete('/posts/:postId/comments/:id', async (req, res) => {
+  const { id, postId } = req.params
 
-//   const { type, data } = req.body
+  let comments = commentsByPostId[postId]
 
-//   if (type === 'CommentModerated') {
-//     const { postId, id, status, content } = data
-//     const comments = commentsByPostId[postId]
+  console.log('delete route called', commentsByPostId)
 
-//     const comment = comments.find((comment) => {
-//       return comment.id === id
-//     })
-//     comment.status = status
+  if (!comments) {
+    return res.status(400).send({
+      error: `Cannot find comments for the given postid=${postId}, commentid=${id}`,
+    })
+  }
 
-//     let eventsServiceHost = process.env.EVENTS_SRV_HOST || 'localhost'
+  let itemIndex = comments.findIndex((x) => x.id == id)
+  if (itemIndex != -1) {
+    console.log('going to remove comment at index ', id)
+    commentsByPostId[postId].splice(itemIndex, 1)
 
-//     await axios.post(`http://${eventsServiceHost}:4005/events`, {
-//       type: 'CommentUpdated',
-//       data: {
-//         id,
-//         status,
-//         postId,
-//         content,
-//       },
-//     })
-//   }
+    try {
+      await natsWrapper.publish('CommentDeleted', {
+        id: id,
+        postId: postId,
+      })
+      console.log('commentdeletedpublished')
+    } catch (err) {
+      console.log(
+        'CommentsService - error occured when trying to post data to nats',
+        err
+      )
+    }
+  }
 
-//   res.send({})
-// })
+  console.log('after removing comments', commentsByPostId[postId])
+  return res.send({ status: 'OK' })
+})
 
 const start = async () => {
   try {

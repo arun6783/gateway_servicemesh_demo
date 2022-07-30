@@ -24,7 +24,7 @@ const CommentCreate = ({ postId, notifyParent }) => {
   }
 
   return (
-    <div>
+    <div className="mt-2">
       <form onSubmit={onSubmit}>
         <div className="form-group">
           <label>New Comment</label>

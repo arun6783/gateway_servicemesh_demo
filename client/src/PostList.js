@@ -21,11 +21,16 @@ const PostList = ({ postCreated }) => {
     return (
       <div
         className="card"
-        style={{ width: '30%', marginBottom: '20px' }}
+        style={{ width: '30%', marginBottom: '20px', maxHeight: '400px' }}
         key={post.id}
       >
         <div className="card-body">
-          <h3>{post.title}</h3>
+          <div style={{ display: 'flex' }}>
+            <h3>{post.title}</h3>
+            <span style={{ marginLeft: 'auto', marginTop: '5px' }}>
+              Post by Arun
+            </span>
+          </div>
           <CommentList comments={post.comments} />
           <CommentCreate
             notifyParent={() => {

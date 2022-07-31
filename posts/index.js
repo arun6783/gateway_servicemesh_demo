@@ -32,7 +32,7 @@ app.post('/posts', async (req, res) => {
     await natsWrapper.publish('PostCreated', newPost)
   } catch (err) {
     console.log(
-      'PostsService - error occured when trying to post data to nats',
+      'PostsService-error occured when trying to post data to nats',
       err
     )
   }

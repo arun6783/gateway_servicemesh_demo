@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogpost-ratings-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blogpost-ratings
+  template:
+    metadata:
+      labels:
+        app: blogpost-ratings
+    spec:
+      containers:
+        - name: blogpost-ratings
+          image: arun6783/blogpost-ratings
+          env:
+            - name: EVENTS_SRV_HOST
+              value: 'blogpost-eventbus-srv'
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: 'servicemeshdemo'
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: blogpost-ratings-srv
+spec:
+  selector:
+    app: blogpost-ratings
+  ports:
+    - name: blogpost-ratings-tcp
+      port: 4004
+      targetPort: 4004
+  type: LoadBalancer

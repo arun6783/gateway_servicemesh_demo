@@ -40,16 +40,16 @@ build:
         manual:
           - src: 'src/**/*.js'
             dest: .
-    - image: arun6783/blogpost-eventbus
-      context: event-bus
-      docker:
-        dockerfile: Dockerfile
-      sync:
-        manual:
-          - src: 'src/**/*.js'
-            dest: .
-    - image: arun6783/blogpost-moderation
-      context: moderation
+    # - image: arun6783/blogpost-eventbus
+    #   context: event-bus
+    #   docker:
+    #     dockerfile: Dockerfile
+    #   sync:
+    #     manual:
+    #       - src: 'src/**/*.js'
+    #         dest: .
+    - image: arun6783/blogpost-ratings
+      context: ratings
       docker:
         dockerfile: Dockerfile
       sync:

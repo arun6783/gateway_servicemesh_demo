@@ -73,7 +73,7 @@ app.delete('/posts/:postId/comments/:id', async (req, res) => {
     }
   }
 
-  console.log('after removing comments', commentsByPostId[postId])
+  console.log('afterremoving comments', commentsByPostId[postId])
   return res.send({ status: 'OK' })
 })
 
@@ -90,7 +90,7 @@ const start = async () => {
       console.log('Listening on 4001')
     })
   } catch (err) {
-    console.log('Comments service - error occured when connecting to nats', err)
+    console.log('Commentsservice - error occured when connecting to nats', err)
   }
 }
 

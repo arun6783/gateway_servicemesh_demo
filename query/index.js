@@ -8,11 +8,7 @@ app.use(bodyParser.json())
 app.use(cors())
 
 const posts = {}
-
 const handleEvent = (type, data) => {
-  console.log('inhandleenven', type)
-  console.log('inhandleendata', data)
-
   if (type === 'PostCreated') {
     const { id, title } = data
 
@@ -21,9 +17,13 @@ const handleEvent = (type, data) => {
 
   if (type === 'CommentCreated') {
     const { id, content, postId, status } = data
-
     const post = posts[postId]
-    post.comments.push({ id, content, status })
+    post.comments.push({
+      id,
+      content,
+      status,
+      ratings: { like: 0, dislike: 0 },
+    })
   }
 
   if (type === 'CommentDeleted') {
@@ -33,16 +33,30 @@ const handleEvent = (type, data) => {
     posts[postId].comments = commentsByPostId.filter((x) => x.id !== id)
   }
 
-  if (type === 'CommentUpdated') {
-    const { id, content, postId, status } = data
+  if (type === 'CommentLiked') {
+    const { commentId, postId } = data
 
-    const post = posts[postId]
-    const comment = post.comments.find((comment) => {
-      return comment.id === id
-    })
+    let comments = posts[postId].comments
 
-    comment.status = status
-    comment.content = content
+    let comment = comments.find((c) => c.id === commentId)
+
+    if (comment) {
+      comment.ratings.like++
+      posts[postId].comments = comments
+    }
+  }
+
+  if (type === 'CommentUnLiked') {
+    const { commentId, postId } = data
+
+    let comments = posts[postId].comments
+
+    let comment = comments.find((c) => c.id === commentId)
+
+    if (comment) {
+      comment.ratings.dislike++
+      posts[postId].comments = comments
+    }
   }
 }
 
@@ -51,7 +65,7 @@ app.get('/posts/:id', (req, res) => {
 })
 
 app.get('/posts', (req, res) => {
-  console.log('posts', posts)
+  console.log('posts=', JSON.stringify(posts))
   res.send(posts)
 })
 
@@ -72,6 +86,8 @@ const start = async () => {
       natsWrapper.listen('PostCreated', 'Query-Service', handleEvent)
       natsWrapper.listen('CommentCreated', 'Query-Service', handleEvent)
       natsWrapper.listen('CommentDeleted', 'Query-Service', handleEvent)
+      natsWrapper.listen('CommentLiked', 'Query-Service', handleEvent)
+      natsWrapper.listen('CommentUnLiked', 'Query-Service', handleEvent)
     } catch (error) {
       console.log(error.message)
     }

@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import Ratings from './Ratings'
 const CommentList = ({ postId, comments, notifyParent }) => {
   const removeComment = async (commentId) => {
     let commentsServiceHost = process.env.COMMENTS_SRV_HOST || 'localhost'
@@ -33,24 +34,14 @@ const CommentList = ({ postId, comments, notifyParent }) => {
             </a>
           </span>
         </div>
-
-        <div>
-          <span className="col-sm pl-0">name</span>
-          <span>
-            <span className="col-sm pl-0">
-              <a>
-                <i className="fa-solid fa-thumbs-up"></i>
-              </a>
-              <span className="ml-1">433</span>
-            </span>
-            <span className="col-sm pl-0">
-              <a>
-                <i className="fa-solid fa-thumbs-down"></i>
-              </a>
-              <span className="ml-1">11</span>
-            </span>
-          </span>
-        </div>
+        {comment.ratings ? (
+          <Ratings
+            commentId={comment.id}
+            rating={comment.ratings}
+            notifyParent={notifyParent}
+            postId={postId}
+          />
+        ) : null}
       </li>
     )
   })

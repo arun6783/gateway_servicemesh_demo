@@ -24,6 +24,8 @@ spec:
               value: 'blogpost-comments-srv'
             - name: QUERY_SRV_HOST
               value: 'blogpost-query-srv'
+            - name: RATINGS_SRV_HOST
+              value: 'blogpost-ratings-srv'
 ---
 kind: Service
 apiVersion: v1

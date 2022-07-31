@@ -25,9 +25,9 @@
 //   //   console.log(`http://${queryServiceHost}:4002/events` + err.message)
 //   // })
 //   // axios
-//   //   .post(`http://${moderationServiceHost}:4003/events`, event)
+//   //   .post(`http://${moderationServiceHost}:4004/events`, event)
 //   //   .catch((err) => {
-//   //     console.log(`http://${moderationServiceHost}:4003/events` + err.message)
+//   //     console.log(`http://${moderationServiceHost}:4004/events` + err.message)
 //   //   })
 //   res.send({ status: 'OK' })
 // })

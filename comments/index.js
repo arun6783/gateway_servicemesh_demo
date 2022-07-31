@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { randomBytes } = require('crypto')
 const cors = require('cors')
-const { natsWrapper } = require('./events/nats-wrapper')
+require('hpropagate')()
 
 const app = express()
 app.use(bodyParser.json())
@@ -24,20 +24,6 @@ app.post('/posts/:id/comments', async (req, res) => {
 
   commentsByPostId[req.params.id] = comments
 
-  try {
-    await natsWrapper.publish('CommentCreated', {
-      id: commentId,
-      content,
-      postId: req.params.id,
-      status: 'approved',
-    })
-  } catch (err) {
-    console.log(
-      'CommentsService - error occured when trying to post data to nats',
-      err
-    )
-  }
-
   res.status(201).send(comments)
 })
 
@@ -58,19 +44,6 @@ app.delete('/posts/:postId/comments/:id', async (req, res) => {
   if (itemIndex != -1) {
     console.log('going to remove comment at index ', id)
     commentsByPostId[postId].splice(itemIndex, 1)
-
-    try {
-      await natsWrapper.publish('CommentDeleted', {
-        id: id,
-        postId: postId,
-      })
-      console.log('commentdeletedpublished')
-    } catch (err) {
-      console.log(
-        'CommentsService - error occured when trying to post data to nats',
-        err
-      )
-    }
   }
 
   console.log('afterremoving comments', commentsByPostId[postId])
@@ -79,13 +52,6 @@ app.delete('/posts/:postId/comments/:id', async (req, res) => {
 
 const start = async () => {
   try {
-    let clusterId = process.env.NATS_CLUSTER_ID || 'servicemeshdemo'
-    let natsUrl = process.env.NATS_URL || 'http://localhost:4222'
-    let clientId =
-      process.env.NATS_CLIENT_ID || 'gateway-servicemesh-postsclient'
-
-    await natsWrapper.connect(clusterId, clientId, natsUrl)
-
     app.listen(4001, () => {
       console.log('Listening on 4001')
     })

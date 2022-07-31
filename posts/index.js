@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { randomBytes } = require('crypto')
 const cors = require('cors')
-const { natsWrapper } = require('./events/nats-wrapper')
+require('hpropagate')()
 
 const app = express()
 app.use(bodyParser.json())
@@ -28,14 +28,6 @@ app.post('/posts', async (req, res) => {
   }
   posts[id] = newPost
 
-  try {
-    await natsWrapper.publish('PostCreated', newPost)
-  } catch (err) {
-    console.log(
-      'PostsService-error occured when trying to post data to nats',
-      err
-    )
-  }
   res.status(201).send(posts[id])
 })
 
@@ -47,12 +39,6 @@ app.post('/events', (req, res) => {
 
 const start = async () => {
   try {
-    let clusterId = process.env.NATS_CLUSTER_ID || 'servicemeshdemo'
-    let natsUrl = process.env.NATS_URL || 'http://localhost:4222'
-    let clientId =
-      process.env.NATS_CLIENT_ID || 'gateway-servicemesh-postsclient'
-
-    await natsWrapper.connect(clusterId, clientId, natsUrl)
     app.listen(4100, () => {
       console.log('Postsservice- Listening on 4100')
     })

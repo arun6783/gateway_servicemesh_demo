@@ -1,19 +1,16 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import urls from './Urls'
 
 const CommentCreate = ({ postId, notifyParent }) => {
   const [content, setContent] = useState('')
 
   const onSubmit = async (event) => {
     event.preventDefault()
-    let commentsServiceHost = process.env.COMMENTS_SRV_HOST || 'localhost'
     try {
-      await axios.post(
-        `http://${commentsServiceHost}:4001/posts/${postId}/comments`,
-        {
-          content,
-        }
-      )
+      await axios.post(`${urls.CommentsServiceBase}/posts/${postId}/comments`, {
+        content,
+      })
       notifyParent(true)
       setContent('')
     } catch (e) {

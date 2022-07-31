@@ -1,12 +1,12 @@
 import React from 'react'
 import axios from 'axios'
 import Ratings from './Ratings'
+import urls from './Urls'
 const CommentList = ({ postId, comments, notifyParent }) => {
   const removeComment = async (commentId) => {
-    let commentsServiceHost = process.env.COMMENTS_SRV_HOST || 'localhost'
     try {
       await axios.delete(
-        `http://${commentsServiceHost}:4001/posts/${postId}/comments/${commentId}`
+        `http://${urls.CommentsServiceBase}/posts/${postId}/comments/${commentId}`
       )
       notifyParent(true)
     } catch (e) {

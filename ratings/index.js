@@ -1,10 +1,9 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const { natsWrapper } = require('./events/nats-wrapper')
+require('hpropagate')()
 
 var app = express()
 const cors = require('cors')
-console.log('using cors')
 app.use(
   cors({
     origin: '*',
@@ -25,18 +24,6 @@ app.post('/posts/:postId/comments/:id/like', async (req, res) => {
   ratings.like++
   ratingsByCommentId[req.params.id] = ratings
 
-  try {
-    await natsWrapper.publish('CommentLiked', {
-      commentId: req.params.id,
-      postId: req.params.postId,
-    })
-  } catch (err) {
-    console.log(
-      'ratingsService -error occured when trying to post likes data to nats',
-      err
-    )
-  }
-
   res.status(201).send(ratingsByCommentId[req.params.id])
 })
 
@@ -46,30 +33,11 @@ app.delete('/posts/:postId/comments/:id/unlike', async (req, res) => {
   ratings.dislike++
   ratingsByCommentId[req.params.id] = ratings
 
-  try {
-    await natsWrapper.publish('CommentUnLiked', {
-      commentId: req.params.id,
-      postId: req.params.postId,
-    })
-  } catch (err) {
-    console.log(
-      'ratingsService - error occured when trying to post unlike data to nats',
-      err
-    )
-  }
-
   res.status(200).send(ratings)
 })
 
 const start = async () => {
   try {
-    let clusterId = process.env.NATS_CLUSTER_ID || 'servicemeshdemo'
-    let natsUrl = process.env.NATS_URL || 'http://localhost:4222'
-    let clientId =
-      process.env.NATS_CLIENT_ID || 'gateway-servicemesh-postsclient'
-
-    await natsWrapper.connect(clusterId, clientId, natsUrl)
-
     app.listen(4004, () => {
       console.log('Listening on 4004')
     })

@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import axios from 'axios'
+import urls from './Urls'
 const PostCreate = ({ notifyParent }) => {
   const [title, setTitle] = useState('')
 
   const onSubmit = async (event) => {
     event.preventDefault()
-    let postsServiceHost = process.env.POSTS_SRV_HOST || 'localhost'
 
-    await axios.post(`http://${postsServiceHost}:4100/posts`, {
+    await axios.post(`${urls.PostsServiceBase}/posts`, {
       title,
     })
     notifyParent()

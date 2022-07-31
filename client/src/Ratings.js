@@ -1,11 +1,11 @@
 import React from 'react'
 import axios from 'axios'
+import urls from './Urls'
 function Ratings({ postId, commentId, rating, notifyParent }) {
   const likeComment = async () => {
-    let ratingsServiceHost = process.env.RATINGS_SRV_HOST || 'localhost'
     try {
       await axios.post(
-        `http://${ratingsServiceHost}:4004/posts/${postId}/comments/${commentId}/like`
+        `${urls.RatingsServiceBase}/posts/${postId}/comments/${commentId}/like`
       )
       notifyParent(true)
     } catch (e) {
@@ -16,10 +16,9 @@ function Ratings({ postId, commentId, rating, notifyParent }) {
   }
 
   const unlikeComment = async () => {
-    let ratingsServiceHost = process.env.RATINGS_SRV_HOST || 'localhost'
     try {
       await axios.delete(
-        `http://${ratingsServiceHost}:4004/posts/${postId}/comments/${commentId}/unlike`
+        `${urls.RatingsServiceBase}/posts/${postId}/comments/${commentId}/unlike`
       )
       notifyParent(true)
     } catch (e) {

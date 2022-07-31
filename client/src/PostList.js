@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import CommentCreate from './CommentCreate'
 import CommentList from './CommentList'
+import urls from './Urls'
 const PostList = ({ postCreated }) => {
   const [posts, setPosts] = useState({})
   const [commentCreated, setCommentCreated] = useState(false)
+
   const fetchPosts = async () => {
-    let queryServiceHost = process.env.QUERY_SRV_HOST || 'localhost'
-
-    const res = await axios.get(`http://${queryServiceHost}:4002/posts`)
-
+    const res = await axios.get(`${urls.QueryServiceBase}/posts`)
     setPosts(res.data)
   }
 

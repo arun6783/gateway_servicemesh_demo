@@ -26,6 +26,12 @@ spec:
               value: 'http://nats-srv:4222'
             - name: NATS_CLUSTER_ID
               value: 'servicemeshdemo'
+            - name: POSTS_SRV_HOST
+              value: 'blogpost-posts-srvce'
+            - name: COMMENTS_SRV_HOST
+              value: 'blogpost-comments-srv'
+            - name: RATINGS_SRV_HOST
+              value: 'blogpost-ratings-srv'
 ---
 kind: Service
 apiVersion: v1

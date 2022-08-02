@@ -35,7 +35,7 @@ spec:
   selector:
     app: blogpost-ratings
   ports:
-    - name: blogpost-ratings-tcp
+    - name: http
       port: 4004
       targetPort: 4004
-  type: LoadBalancer
+#  type: LoadBalancer

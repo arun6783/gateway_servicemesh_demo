@@ -35,7 +35,7 @@ spec:
   selector:
     app: blogpost-posts
   ports:
-    - name: blogpost-posts-tcp
+    - name: http
       port: 4100
       targetPort: 4100
-  type: LoadBalancer
+#  type: LoadBalancer

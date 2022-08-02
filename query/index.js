@@ -7,25 +7,36 @@ require('hpropagate')()
 
 const app = express()
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({ origin: '*' }))
 
-app.get('/posts', async (req, res) => {
+app.get('/api/query', async (req, res) => {
   //1 get posts
   let posts = {}
-
-  const postRes = await axios.get(`${Urls.PostsServiceBase}/posts`)
+  const ratingsRes = await axios.get(`${Urls.RatingsServiceBase}/api/ratings`)
+  const postRes = await axios.get(`${Urls.PostsServiceBase}/api/posts`)
   posts = postRes.data
   const promises = []
   Object.values(posts).forEach((post, inde) => {
     //2. get comments for posts
     promises.push(
       axios
-        .get(`${Urls.CommentsServiceBase}/posts/${post.id}/comments`)
+        .get(`${Urls.CommentsServiceBase}/api/posts/${post.id}/comments`)
         .then((commentsRes) => {
-          posts[post.id].comments = commentsRes.data
+          let comments = commentsRes.data.map((x) => {
+            //3 get ratings for a comment
+            x.ratings = ratingsRes.data[x.id] || {
+              like: 0,
+              dislike: 0,
+            }
+            return x
+          })
+          posts[post.id].comments = comments
         })
         .catch((err) => {
-          console.log('error occured when getting posts for id = ', post.id)
+          console.log(
+            `error occured when getting posts for id = ${post.id}`,
+            err
+          )
         })
     )
   })

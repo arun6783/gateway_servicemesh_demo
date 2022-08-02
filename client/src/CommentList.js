@@ -6,12 +6,12 @@ const CommentList = ({ postId, comments, notifyParent }) => {
   const removeComment = async (commentId) => {
     try {
       await axios.delete(
-        `http://${urls.CommentsServiceBase}/posts/${postId}/comments/${commentId}`
+        `${urls.CommentsServiceBase}/posts/${postId}/comments/${commentId}`
       )
       notifyParent(true)
     } catch (e) {
       console.log(
-        `error occured when deleting comment for post id=${postId}. error = ${e}`
+        `error occured when deletingcomment for post id=${postId}. error = ${e}`
       )
     }
   }

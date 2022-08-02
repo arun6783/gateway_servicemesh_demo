@@ -8,7 +8,13 @@ const PostList = ({ postCreated }) => {
   const [commentCreated, setCommentCreated] = useState(false)
 
   const fetchPosts = async () => {
-    const res = await axios.get(`${urls.QueryServiceBase}/posts`)
+    const res = await axios.get(`${urls.QueryServiceBase}/query`, {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
+    })
     setPosts(res.data)
   }
 
@@ -27,16 +33,20 @@ const PostList = ({ postCreated }) => {
           <div style={{ display: 'flex' }}>
             <h3>{post.title}</h3>
             <span style={{ marginLeft: 'auto', marginTop: '5px' }}>
-              Post by Arun
+              Post by User
             </span>
           </div>
-          <CommentList
-            postId={post.id}
-            notifyParent={() => {
-              setCommentCreated(!commentCreated)
-            }}
-            comments={post.comments}
-          />
+          {post?.comments ? (
+            <>
+              <CommentList
+                postId={post.id}
+                notifyParent={() => {
+                  setCommentCreated(!commentCreated)
+                }}
+                comments={post.comments}
+              />
+            </>
+          ) : null}
           <CommentCreate
             postId={post.id}
             notifyParent={() => {

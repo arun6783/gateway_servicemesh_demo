@@ -4,26 +4,27 @@ import urls from './Urls'
 function Ratings({ postId, commentId, rating, notifyParent }) {
   const likeComment = async () => {
     try {
-      await axios.post(
-        `${urls.RatingsServiceBase}/posts/${postId}/comments/${commentId}/like`
-      )
+      let url = `${urls.RatingsServiceBase}/ratings`
+      console.log('likeurl-', url)
+      await axios.post(url, { id: commentId, like: true })
+
       notifyParent(true)
     } catch (e) {
       console.log(
-        `error occured when liking comment for commentId id=${commentId}. error = ${e}`
+        `error occured   when liking comment for commentId id=${commentId}. error = ${e}`
       )
     }
   }
 
   const unlikeComment = async () => {
     try {
-      await axios.delete(
-        `${urls.RatingsServiceBase}/posts/${postId}/comments/${commentId}/unlike`
-      )
+      let url = `${urls.RatingsServiceBase}/ratings`
+      console.log('likeurl-', url)
+      await axios.post(url, { id: commentId, like: false })
       notifyParent(true)
     } catch (e) {
       console.log(
-        `error occured when liking comment for commentId id=${commentId}. error = ${e}`
+        `error occured  when liking comment for commentId id=${commentId}. error = ${e}`
       )
     }
   }

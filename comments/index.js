@@ -6,15 +6,18 @@ require('hpropagate')()
 
 const app = express()
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({ origin: '*' }))
 
 const commentsByPostId = {}
 
-app.get('/posts/:id/comments', (req, res) => {
-  res.send(commentsByPostId[req.params.id] || [])
+app.get('/api/posts/:id/comments', (req, res) => {
+  var millisecondsToWait = 500
+  setTimeout(function () {
+    res.send(commentsByPostId[req.params.id] || [])
+  }, millisecondsToWait)
 })
 
-app.post('/posts/:id/comments', async (req, res) => {
+app.post('/api/posts/:id/comments', async (req, res) => {
   const commentId = randomBytes(4).toString('hex')
   const { content } = req.body
 
@@ -27,7 +30,7 @@ app.post('/posts/:id/comments', async (req, res) => {
   res.status(201).send(comments)
 })
 
-app.delete('/posts/:postId/comments/:id', async (req, res) => {
+app.delete('/api/posts/:postId/comments/:id', async (req, res) => {
   const { id, postId } = req.params
 
   let comments = commentsByPostId[postId]

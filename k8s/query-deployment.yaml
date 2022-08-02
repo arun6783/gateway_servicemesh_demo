@@ -41,7 +41,7 @@ spec:
   selector:
     app: blogpost-query
   ports:
-    - name: blogpost-query-tcp
+    - name: http
       port: 4002
       targetPort: 4002
-  type: LoadBalancer
+#  type: LoadBalancer

@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kong-istio-ingress
+  annotations:
+    konghq.com/preserve-host: 'false'
+spec:
+  ingressClassName: kong
+  rules:
+    - host: blogposts.internal
+    - http:
+        paths:
+          - path: /static/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: blogpost-client-srv
+                port:
+                  number: 3000
+          - path: /
+            pathType: Exact
+            backend:
+              service:
+                name: blogpost-client-srv
+                port:
+                  number: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kong-istio-ingress-backend
+  annotations:
+    konghq.com/regex-priority: '1'
+spec:
+  ingressClassName: kong
+  rules:
+    - host: blogposts.internal
+    - http:
+        paths:
+          - path: /(like|unlike|api/ratings|api/.*like).*
+            pathType: Prefix
+            backend:
+              service:
+                name: blogpost-ratings-srv
+                port:
+                  number: 4004
+
+          - path: /(api/posts/[A-Z|a-z0-9]{8}/comments).*
+            pathType: Prefix
+            backend:
+              service:
+                name: blogpost-comments-srv
+                port:
+                  number: 4001
+
+          - path: /(api/query).*
+            pathType: Prefix
+            backend:
+              service:
+                name: blogpost-query-srv
+                port:
+                  number: 4002
+
+          - path: /(api/posts).*
+            pathType: Prefix
+            backend:
+              service:
+                name: blogpost-posts-srvce
+                port:
+                  number: 4100

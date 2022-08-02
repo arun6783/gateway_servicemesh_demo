@@ -1,41 +1,38 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 require('hpropagate')()
-
 var app = express()
 const cors = require('cors')
-app.use(
-  cors({
-    origin: '*',
-  })
-)
+app.use(cors({ origin: '*' }))
 
 app.use(bodyParser.json())
 
 const ratingsByCommentId = {}
 
-app.get('/posts/:postId/comments/:id/ratings', (req, res) => {
-  res.send(ratingsByCommentId[req.params.id]?.count || 0)
+app.get('/api/ratings', (req, res) => {
+  console.log('allratings', ratingsByCommentId)
+  res.send(ratingsByCommentId)
 })
 
-app.post('/posts/:postId/comments/:id/like', async (req, res) => {
-  const ratings = ratingsByCommentId[req.params.id] || { like: 0, dislike: 0 }
+app.post('/api/ratings', (req, res) => {
+  const { id, like } = req.body
+  console.log('post', id)
+  res.send(ratingsByCommentId)
 
-  ratings.like++
-  ratingsByCommentId[req.params.id] = ratings
-
-  res.status(201).send(ratingsByCommentId[req.params.id])
+  const ratings = ratingsByCommentId[id] || { like: 0, dislike: 0 }
+  if (like) {
+    ratings.like++
+  } else {
+    ratings.dislike++
+  }
+  ratingsByCommentId[id] = ratings
+  res.status(201).send(ratingsByCommentId[id])
 })
 
-app.delete('/posts/:postId/comments/:id/unlike', async (req, res) => {
-  const ratings = ratingsByCommentId[req.params.id] || { like: 0, dislike: 0 }
-
-  ratings.dislike++
-  ratingsByCommentId[req.params.id] = ratings
-
-  res.status(200).send(ratings)
+app.get('*', function (req, res) {
+  console.log('404ing')
+  res.send({ error: 'route not found' })
 })
-
 const start = async () => {
   try {
     app.listen(4004, () => {

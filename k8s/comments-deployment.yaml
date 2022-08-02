@@ -35,7 +35,7 @@ spec:
   selector:
     app: blogpost-comments
   ports:
-    - name: blogpost-comments-tcp
+    - name: http
       port: 4001
       targetPort: 4001
-  type: LoadBalancer
+#  type: LoadBalancer

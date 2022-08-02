@@ -6,15 +6,15 @@ require('hpropagate')()
 
 const app = express()
 app.use(bodyParser.json())
-app.use(cors())
+app.use(cors({ origin: '*' }))
 
 const posts = {}
 
-app.get('/posts', (req, res) => {
+app.get('/api/posts', (req, res) => {
   res.send(posts)
 })
 
-app.post('/posts', async (req, res) => {
+app.post('/api/posts', async (req, res) => {
   const id = randomBytes(4).toString('hex')
   const { title } = req.body
   if (!title || title.length === 0) {
@@ -31,7 +31,7 @@ app.post('/posts', async (req, res) => {
   res.status(201).send(posts[id])
 })
 
-app.post('/events', (req, res) => {
+app.post('/api/events', (req, res) => {
   console.log('Received Event', req.body.type)
 
   res.send({})

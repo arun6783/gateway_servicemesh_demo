@@ -1,0 +1,15 @@
+#1 start minikube 
+    minikube start --memory 8192 --cpus 8 --addons metallb ingress ingress-dns
+1a. minikube addons configure metallb (first find minikube ip and then based on that fill in ip range)
+
+#2. install istio from folder (wait after 2)
+
+#next install kong ingress
+
+kubectl create namespace kong
+
+kubectl label namespace kong istio-injection=enabled
+
+helm upgrade -i kong-demo kong/kong -n kong   --set image.tag=2.6   --set admin.enabled=true   --set admin.http.enabled=true   --set ingressController.installCRDs=false   
+
+#get kong proxy ip and update in hosts file (for eg 172.24.241.126 blogposts.internal)

@@ -6,18 +6,18 @@ require('hpropagate')()
 
 const app = express()
 app.use(bodyParser.json())
-app.use(cors({ origin: '*' }))
+app.use(cors())
 
 const commentsByPostId = {}
 
-app.get('/api/posts/:id/comments', (req, res) => {
-  var millisecondsToWait = 500
+app.get('/api/post/:id/comments', (req, res) => {
+  var millisecondsToWait = (Math.floor(Math.random() * 10) + 1) * 10
   setTimeout(function () {
     res.send(commentsByPostId[req.params.id] || [])
   }, millisecondsToWait)
 })
 
-app.post('/api/posts/:id/comments', async (req, res) => {
+app.post('/api/post/:id/comments', async (req, res) => {
   const commentId = randomBytes(4).toString('hex')
   const { content } = req.body
 
@@ -30,7 +30,7 @@ app.post('/api/posts/:id/comments', async (req, res) => {
   res.status(201).send(comments)
 })
 
-app.delete('/api/posts/:postId/comments/:id', async (req, res) => {
+app.delete('/api/post/:postId/comments/:id', async (req, res) => {
   const { id, postId } = req.params
 
   let comments = commentsByPostId[postId]
@@ -59,7 +59,7 @@ const start = async () => {
       console.log('Listening on 4001')
     })
   } catch (err) {
-    console.log('Commentsservice - error occured when connecting to nats', err)
+    console.log('Commentsservice-error occured when connecting to nats', err)
   }
 }
 

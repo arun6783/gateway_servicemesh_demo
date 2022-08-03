@@ -20,7 +20,7 @@ app.get('/api/query', async (req, res) => {
     //2. get comments for posts
     promises.push(
       axios
-        .get(`${Urls.CommentsServiceBase}/api/posts/${post.id}/comments`)
+        .get(`${Urls.CommentsServiceBase}/api/post/${post.id}/comments`)
         .then((commentsRes) => {
           let comments = commentsRes.data.map((x) => {
             //3 get ratings for a comment

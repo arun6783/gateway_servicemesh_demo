@@ -8,7 +8,7 @@ const CommentCreate = ({ postId, notifyParent }) => {
   const onSubmit = async (event) => {
     event.preventDefault()
     try {
-      await axios.post(`${urls.CommentsServiceBase}/posts/${postId}/comments`, {
+      await axios.post(`${urls.CommentsServiceBase}/post/${postId}/comments`, {
         content,
       })
       notifyParent(true)

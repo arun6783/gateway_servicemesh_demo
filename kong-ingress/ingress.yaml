@@ -45,7 +45,7 @@ spec:
                 port:
                   number: 4004
 
-          - path: /(api/posts/[A-Z|a-z0-9]{8}/comments).*
+          - path: /(api/comments|api/.*comments).*
             pathType: Prefix
             backend:
               service:

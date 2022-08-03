@@ -7,7 +7,24 @@ const PostList = ({ postCreated }) => {
   const [posts, setPosts] = useState({})
   const [commentCreated, setCommentCreated] = useState(false)
 
+  let timer
+
+  const [runningTime, setRunningTime] = useState(0)
+
+  const stopCountDown = () => {
+    clearInterval(timer)
+  }
+
+  const startCountDown = () => {
+    const startTime = Date.now() - 0
+    timer = setInterval(() => {
+      setRunningTime(Date.now() - startTime)
+    })
+  }
+
   const fetchPosts = async () => {
+    startCountDown()
+
     const res = await axios.get(`${urls.QueryServiceBase}/query`, {
       headers: {
         'Cache-Control': 'no-cache',
@@ -16,6 +33,7 @@ const PostList = ({ postCreated }) => {
       },
     })
     setPosts(res.data)
+    stopCountDown()
   }
 
   useEffect(() => {
@@ -46,7 +64,9 @@ const PostList = ({ postCreated }) => {
                 comments={post.comments}
               />
             </>
-          ) : null}
+          ) : (
+            <p>No Comments present!!</p>
+          )}
           <CommentCreate
             postId={post.id}
             notifyParent={() => {
@@ -59,9 +79,19 @@ const PostList = ({ postCreated }) => {
   })
 
   return (
-    <div className="d-flex flex-row flex-wrap justify-content-between">
-      {renderedPosts}
-    </div>
+    <>
+      <div className="row align-items-start">
+        <div className="col">
+          <h1>Posts</h1>
+        </div>
+        <div className="col">
+          <p className="text-right">{runningTime} ms</p>
+        </div>
+      </div>
+      <div className="d-flex flex-row flex-wrap justify-content-between">
+        {renderedPosts}
+      </div>
+    </>
   )
 }
 

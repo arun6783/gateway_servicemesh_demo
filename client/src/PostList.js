@@ -24,15 +24,16 @@ const PostList = ({ postCreated }) => {
 
   const fetchPosts = async () => {
     startCountDown()
-
-    const res = await axios.get(`${urls.QueryServiceBase}/query`, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: '0',
-      },
-    })
-    setPosts(res.data)
+    try {
+      const res = await axios.get(`${urls.QueryServiceBase}/query`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+          Expires: '0',
+        },
+      })
+      setPosts(res.data)
+    } catch (err) {}
     stopCountDown()
   }
 
@@ -50,9 +51,11 @@ const PostList = ({ postCreated }) => {
         <div className="card-body">
           <div style={{ display: 'flex' }}>
             <h3>{post.title}</h3>
-            <span style={{ marginLeft: 'auto', marginTop: '5px' }}>
-              Post by User
-            </span>
+            {post.name ? (
+              <span style={{ marginLeft: 'auto', marginTop: '5px' }}>
+                {post.name}
+              </span>
+            ) : null}
           </div>
           {post?.comments ? (
             <>

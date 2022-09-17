@@ -32,6 +32,9 @@ spec:
               value: 'blogpost-comments-srv'
             - name: RATINGS_SRV_HOST
               value: 'blogpost-ratings-srv'
+          ports:
+            - containerPort: 4002
+
 ---
 kind: Service
 apiVersion: v1
@@ -43,5 +46,4 @@ spec:
   ports:
     - name: http
       port: 4002
-      targetPort: 4002
-#  type: LoadBalancer
+  type: ClusterIP

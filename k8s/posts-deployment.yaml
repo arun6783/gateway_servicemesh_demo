@@ -26,6 +26,40 @@ spec:
               value: 'http://nats-srv:4222'
             - name: NATS_CLUSTER_ID
               value: 'servicemeshdemo'
+          ports:
+            - containerPort: 4100
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogpost-posts-depl-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blogpost-posts
+  template:
+    metadata:
+      labels:
+        app: blogpost-posts
+        version: v1
+    spec:
+      containers:
+        - name: blogpost-posts
+          image: arun6783/blogpost-posts:v1
+          env:
+            - name: EVENTS_SRV_HOST
+              value: 'blogpost-eventbus-srv'
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: 'servicemeshdemo'
+          ports:
+            - containerPort: 4100
 ---
 kind: Service
 apiVersion: v1
@@ -37,5 +71,4 @@ spec:
   ports:
     - name: http
       port: 4100
-      targetPort: 4100
-#  type: LoadBalancer
+  type: ClusterIP

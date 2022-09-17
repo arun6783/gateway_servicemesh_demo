@@ -2,6 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const { randomBytes } = require('crypto')
 const cors = require('cors')
+const { randomName } = require('./randomName')
 require('hpropagate')()
 
 const app = express()
@@ -11,6 +12,9 @@ app.use(cors({ origin: '*' }))
 const posts = {}
 
 app.get('/api/posts', (req, res) => {
+  Object.values(posts).map((p) => {
+    p.name = randomName()
+  })
   res.send(posts)
 })
 
@@ -21,7 +25,6 @@ app.post('/api/posts', async (req, res) => {
     return res.status(400).send({ error: 'title is required' })
   }
 
-  console.log('title', title)
   let newPost = {
     id,
     title,

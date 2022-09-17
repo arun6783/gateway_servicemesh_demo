@@ -22,14 +22,15 @@ app.get('/api/query', async (req, res) => {
       axios
         .get(`${Urls.CommentsServiceBase}/api/post/${post.id}/comments`)
         .then((commentsRes) => {
-          let comments = commentsRes.data.map((x) => {
-            //3 get ratings for a comment
-            x.ratings = ratingsRes.data[x.id] || {
-              like: 0,
-              dislike: 0,
-            }
-            return x
-          })
+          let comments =
+            commentsRes?.data?.map((x) => {
+              //3 get ratings for a comment
+              x.ratings = ratingsRes?.data[x.id] || {
+                like: 0,
+                dislike: 0,
+              }
+              return x
+            }) || []
           posts[post.id].comments = comments
         })
         .catch((err) => {
